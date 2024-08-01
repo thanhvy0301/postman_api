@@ -1,3 +1,9 @@
-﻿firstName,lastName,totalPrice,checkinDate,checkoutDate
-vy,doan,123,20/11/2022,20/12/2020
-vy,thanh,456,20/11/2022,20/12/2020
+﻿ApiName,firstName,lastName,totalPrice,checkinDate,checkoutDate
+CreateBooking,vy,doan,123,2020-11-22,2020-11-23
+CreateBooking,vy,thanh,abc,2020-11-22,2020-11-23
+CreateBooking,doan,thanh,,2020-11-22,2020-11-23
+CreateBooking,,thanh,123,2020-11-22,2020-11-23
+UpdateBooking,vy,doan,123,2020-11-22,2020-11-23
+UpdateBooking,vy,thanh,abc,2020-11-22,2020-11-23
+UpdateBooking,doan,thanh,,2020-11-22,2020-11-23
+UpdateBooking,,thanh,123,2020-11-22,2020-11-23

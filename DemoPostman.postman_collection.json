@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e6a43574-edd4-4a8c-851a-c332b47f11e4",
+		"_postman_id": "ec25d155-6cec-4bdd-83ef-6d198727ad48",
 		"name": "DemoPostman",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "31294932"
@@ -20,9 +20,26 @@
 							"if(statCode== 200){\r",
 							"    const responseData = pm.response.json();\r",
 							"    const tokenAuth = responseData.token;\r",
-							"    pm.environment.set(\"token\", tokenAuth);\r",
+							"    pm.collectionVariables.set(\"token\", tokenAuth);\r",
 							"    console.log(tokenAuth);\r",
-							"}"
+							"}\r",
+							"// // Đếm số lượng pass và fail cho từng yêu cầu\r",
+							"// let passCount = 0;\r",
+							"// let failCount = 0;\r",
+							"\r",
+							"// const tests = pm.test.getResults();\r",
+							"\r",
+							"// tests.forEach(test => {\r",
+							"//     if (test.result.passed) {\r",
+							"//         passCount++;\r",
+							"//     } else {\r",
+							"//         failCount++;\r",
+							"//     }\r",
+							"// });\r",
+							"\r",
+							"// // Lưu trữ số lượng pass và fail vào biến toàn cục\r",
+							"// pm.collectionVariables.set(\"passCount\", (parseInt(pm.collectionVariables.get(\"passCount\") || 0) + passCount));\r",
+							"// pm.collectionVariables.set(\"failCount\", (parseInt(pm.collectionVariables.get(\"failCount\") || 0) + failCount));"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -52,30 +69,34 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"console.log('Response:', pm.response.json());\r",
-							"pm.test(\"Response status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"const responseData = pm.response.json();\r",
-							"console.log(responseData);\r",
 							"\r",
-							"// Lấy response JSON\r",
-							"const response = pm.response.json();\r",
-							"\r",
-							"let bookingId = parseInt(responseData.bookingid);\r",
-							"pm.environment.set(\"bookingId\", bookingId);\r",
-							"\r",
-							"pm.test(\"Totalprice is a number or status code is 400\", function () {\r",
-							"    const responseData = pm.response.json();    \r",
-							"    // Kiểm tra nếu totalprice không phải là số\r",
-							"    if (typeof responseData.booking.totalprice !== 'number') {\r",
-							"        // Nếu totalprice không phải là số, kiểm tra mã trạng thái là 400\r",
-							"        pm.expect(pm.response.code).to.eql(400, \"Expected status code to be 400 when totalprice is not a number\");\r",
-							"    } else {\r",
-							"        // Nếu totalprice là số, kiểm tra mã trạng thái là 200\r",
-							"        pm.expect(pm.response.code).to.eql(200, \"Expected status code to be 200 when totalprice is a number\");\r",
+							"const apiName = pm.collectionVariables.get(\"apiName\");\r",
+							"pm.environment.set(\"createStatus\", pm.response.code);\r",
+							"if(apiName === \"CreateBooking\"){\r",
+							"    if(pm.response.code===200){\r",
+							"        let responseData = pm.response.json();\r",
+							"        pm.test(\"Check value Lastname\", function(){\r",
+							"        pm.expect(responseData.lastname).to.be.a('undefined').and.to.not.be.null;\r",
+							"        });\r",
+							"        pm.test(\"Check value Totalprice\", function(){\r",
+							"        pm.expect(responseData.totalprice).to.be.a('undefined').and.to.not.be.null;\r",
+							"        });\r",
+							"        let bookingId = parseInt(responseData.bookingid);\r",
+							"        pm.collectionVariables.set(\"bookingId\", bookingId);\r",
+							"        let stCodeCreate = pm.response.code;\r",
+							"        pm.collectionVariables.set(\"stCodeCreate\", stCodeCreate);\r",
+							"        console.log(stCodeCreate);\r",
 							"    }\r",
-							"});\r",
+							"    else if(pm.response.code!==200){\r",
+							"        pm.test(\"Status code is 400\", function () {\r",
+							"        pm.response.to.have.status(400);\r",
+							"        });\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
 							""
 						],
 						"type": "text/javascript",
@@ -86,10 +107,30 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"// Lấy dữ liệu từ file CSV\r",
-							"const requestData = pm.iterationData.toObject();\r",
-							"console.log(requestData);\r",
+							"const apiName = pm.iterationData.get(\"ApiName\");\r",
+							"pm.collectionVariables.set(\"apiName\", apiName);\r",
+							"console.log(\"API Name:\", apiName);\r",
+							"console.log(\"CreateBooking ******\");\r",
 							"\r",
+							"// Lấy dữ liệu từ tệp CSV một lần và lưu vào biến\r",
+							"const iterationData = pm.iterationData.toObject();\r",
+							"\r",
+							"// Khởi tạo mảng để chứa các giá trị của từng cột\r",
+							"const columns = [];\r",
+							"// Duyệt qua từng cột và thêm vào mảng\r",
+							"for (const key in iterationData) {\r",
+							"    if (iterationData.hasOwnProperty(key)) {\r",
+							"        columns.push(iterationData[key]);\r",
+							"    }\r",
+							"}\r",
+							"// Kiểm tra giá trị của apiName và đặt các biến tương ứng\r",
+							"if (apiName === \"CreateBooking\") {\r",
+							"    pm.collectionVariables.set(\"firstName\", columns[1]);\r",
+							"    pm.collectionVariables.set(\"lastName\", columns[2]);\r",
+							"    pm.collectionVariables.set(\"totalPrice\", columns[3]);\r",
+							"    pm.collectionVariables.set(\"checkinDate\", columns[4]);\r",
+							"    pm.collectionVariables.set(\"checkoutDate\", columns[5]);\r",
+							"}\r",
 							""
 						],
 						"type": "text/javascript",
@@ -113,7 +154,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstname\" : \"{{firstName}}\",\r\n    \"lastname\" : \"{{lastName}}\",\r\n    \"totalprice\" :\"{{totalPrice}}\",\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"raw": "{\r\n    \"firstname\" : \"{{firstName}}\",\r\n    \"lastname\" : \"{{lastName}}\",\r\n    \"totalprice\" :{{totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -129,6 +170,44 @@
 			"event": [
 				{
 					"listen": "test",
+					"script": {
+						"exec": [
+							"// Kiểm tra mã trạng thái của phản hồi\r",
+							"// pm.test(\"Response status code is 200\", function () {\r",
+							"//   pm.response.to.have.status(200);\r",
+							"// });\r",
+							"let getStatusCode = pm.collectionVariables.get(\"stCodeCreate\");\r",
+							"if (getStatusCode===200){\r",
+							"    try {\r",
+							"        let responseData = pm.response.json();\r",
+							"        pm.test(\"Validate the schema of the response body\", function () {\r",
+							"            pm.expect(responseData.firstname).to.be.a('string');\r",
+							"            pm.expect(responseData.lastname).to.be.a('string');\r",
+							"            pm.expect(responseData.totalprice).to.be.a('number');\r",
+							"            pm.expect(responseData.depositpaid).to.be.a('boolean');\r",
+							"            pm.expect(responseData.bookingdates).to.be.an('object');\r",
+							"            pm.expect(responseData.bookingdates.checkin).to.be.a('string');\r",
+							"            pm.expect(responseData.bookingdates.checkout).to.be.a('string');\r",
+							"            pm.expect(responseData.additionalneeds).to.be.a('string');\r",
+							"        });\r",
+							"    } catch (e) {\r",
+							"        console.log(\"Null data\");\r",
+							"    }\r",
+							"}else if(getStatusCode!==200){\r",
+							"    pm.test(\"Status code is 400\", function () {\r",
+							"        pm.response.to.have.status(404);\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
 					"script": {
 						"exec": [
 							""
@@ -170,8 +249,31 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.environment.set(\"totalPriceUpdate\", 123456);\r",
-							"pm.environment.set(\"firstNameUpdate\", \"vydoan123\");"
+							"const apiName = pm.iterationData.get(\"ApiName\");\r",
+							"pm.collectionVariables.set(\"apiName\", apiName);\r",
+							"console.log(\"API Name:\", apiName);\r",
+							"console.log(\"UpdateBooking ******\");\r",
+							"\r",
+							"// Lấy dữ liệu từ tệp CSV một lần và lưu vào biến\r",
+							"const iterationData = pm.iterationData.toObject();\r",
+							"\r",
+							"// Khởi tạo mảng để chứa các giá trị của từng cột\r",
+							"const columns = [];\r",
+							"// Duyệt qua từng cột và thêm vào mảng\r",
+							"for (const key in iterationData) {\r",
+							"    if (iterationData.hasOwnProperty(key)) {\r",
+							"        columns.push(iterationData[key]);\r",
+							"    }\r",
+							"}\r",
+							"// Kiểm tra giá trị của apiName và đặt các biến tương ứng\r",
+							"if (apiName === \"UpdateBooking\") {\r",
+							"    pm.collectionVariables.set(\"firstName\", columns[1]);\r",
+							"    pm.collectionVariables.set(\"lastName\", columns[2]);\r",
+							"    pm.collectionVariables.set(\"totalPrice\", columns[3]);\r",
+							"    pm.collectionVariables.set(\"checkinDate\", columns[4]);\r",
+							"    pm.collectionVariables.set(\"checkoutDate\", columns[5]);\r",
+							"}\r",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -181,17 +283,25 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Kiểm tra mã trạng thái của response là 405\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"const expectedTotalprice = pm.environment.get(\"totalPriceUpdate\");\r",
-							"console.log(expectedTotalprice);\r",
-							"pm.test(\"Check totalprice after update\", function(){\r",
-							"    const responseJson = pm.response.json();\r",
-							"    pm.expect(responseJson.totalprice).to.equal(expectedTotalprice);\r",
-							"});\r",
-							""
+							"console.log(pm.environment.get(\"bookingId\"));\r",
+							"const apiName = pm.collectionVariables.get(\"apiName\");\r",
+							"if(apiName === \"UpdateBooking\"){\r",
+							"    if(pm.response.code===200){\r",
+							"        let responseData = pm.response.json();\r",
+							"        pm.test(\"Check value Lastname\", function(){\r",
+							"        pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
+							"        });\r",
+							"        pm.test(\"Check value Totalprice\", function(){\r",
+							"        pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
+							"        });\r",
+							"        // let bookingId = parseInt(responseData.bookingid);\r",
+							"        // pm.environment.set(\"bookingId\", bookingId);\r",
+							"    }else if(pm.response.code===400){\r",
+							"        pm.test(\"Status code is 400\", function () {\r",
+							"        pm.response.to.have.status(400);\r",
+							"        });\r",
+							"    }\r",
+							"}"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -214,7 +324,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstname\" : \"{{firstNameUpdate}}\",\r\n    \"lastname\" : \"{{lastNameUpdate}}\",\r\n    \"totalprice\" :\"{{totalPriceUpdate}}\",\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"raw": "{\r\n    \"firstname\" : \"{{firstName}}\",\r\n    \"lastname\" : \"{{lastName}}\",\r\n    \"totalprice\" :{{totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -224,48 +334,31 @@
 				"url": "https://restful-booker.herokuapp.com/booking/{{bookingId}}"
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		},
 		{
-			"name": "DeleBooking",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", function () {\r",
-							"    pm.response.to.have.status(201);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Cookie",
-						"value": "token={{tokenAuth}}",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Basic YWRtaW46cGFzc3dvcmQxMjM=",
-						"type": "text"
-					}
-				],
-				"url": "https://restful-booker.herokuapp.com/booking/{{bookingId}}"
-			},
-			"response": []
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"variable": [
-		{
-			"key": "BookingID",
-			"value": "BookingID"
-		},
 		{
 			"key": "bookingId",
 			"value": "bookingId"
@@ -273,6 +366,38 @@
 		{
 			"key": "tokenAuth",
 			"value": "tokenHeader"
+		},
+		{
+			"key": "apiName",
+			"value": ""
+		},
+		{
+			"key": "firstName",
+			"value": ""
+		},
+		{
+			"key": "lastName",
+			"value": ""
+		},
+		{
+			"key": "totalPrice",
+			"value": ""
+		},
+		{
+			"key": "checkinDate",
+			"value": ""
+		},
+		{
+			"key": "checkoutDate",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "stCodeCreate",
+			"value": ""
 		}
 	]
 }

@@ -1,0 +1,4 @@
+level: log, messages: API Name:,CreateBooking
+level: log, messages: CreateBooking ******
+level: log, messages: BookingId has been saved: 1996
+level: log, messages: Status code CreateBooking has been saved: 1996

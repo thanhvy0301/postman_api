@@ -1,0 +1,1 @@
+{"bookingid":1960,"booking":{"firstname":"vy","lastname":"doan","totalprice":123,"depositpaid":true,"bookingdates":{"checkin":"2020-11-22","checkout":"2020-11-23"},"additionalneeds":"Breakfast"}}

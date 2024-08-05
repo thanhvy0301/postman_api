@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ec25d155-6cec-4bdd-83ef-6d198727ad48",
+		"_postman_id": "77a31c3e-5fa8-45d6-85a2-dcc858cfc134",
 		"name": "DemoPostman",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "31294932"
@@ -21,7 +21,7 @@
 							"    const responseData = pm.response.json();\r",
 							"    const tokenAuth = responseData.token;\r",
 							"    pm.collectionVariables.set(\"token\", tokenAuth);\r",
-							"    console.log(tokenAuth);\r",
+							"    console.log(\"Token has been saved: \"+ tokenAuth);\r",
 							"}\r",
 							"// // Đếm số lượng pass và fail cho từng yêu cầu\r",
 							"// let passCount = 0;\r",
@@ -83,9 +83,10 @@
 							"        });\r",
 							"        let bookingId = parseInt(responseData.bookingid);\r",
 							"        pm.collectionVariables.set(\"bookingId\", bookingId);\r",
+							"        console.log(\"BookingId has been saved: \" + bookingId);\r",
 							"        let stCodeCreate = pm.response.code;\r",
 							"        pm.collectionVariables.set(\"stCodeCreate\", stCodeCreate);\r",
-							"        console.log(stCodeCreate);\r",
+							"        console.log(\"Status code CreateBooking has been saved: \" + bookingId);\r",
 							"    }\r",
 							"    else if(pm.response.code!==200){\r",
 							"        pm.test(\"Status code is 400\", function () {\r",
@@ -172,10 +173,6 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Kiểm tra mã trạng thái của phản hồi\r",
-							"// pm.test(\"Response status code is 200\", function () {\r",
-							"//   pm.response.to.have.status(200);\r",
-							"// });\r",
 							"let getStatusCode = pm.collectionVariables.get(\"stCodeCreate\");\r",
 							"if (getStatusCode===200){\r",
 							"    try {\r",
@@ -256,7 +253,6 @@
 							"\r",
 							"// Lấy dữ liệu từ tệp CSV một lần và lưu vào biến\r",
 							"const iterationData = pm.iterationData.toObject();\r",
-							"\r",
 							"// Khởi tạo mảng để chứa các giá trị của từng cột\r",
 							"const columns = [];\r",
 							"// Duyệt qua từng cột và thêm vào mảng\r",
@@ -289,13 +285,11 @@
 							"    if(pm.response.code===200){\r",
 							"        let responseData = pm.response.json();\r",
 							"        pm.test(\"Check value Lastname\", function(){\r",
-							"        pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
+							"            pm.expect(responseData.lastname).to.be.a('number').and.to.not.be.null;\r",
 							"        });\r",
 							"        pm.test(\"Check value Totalprice\", function(){\r",
-							"        pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
+							"            pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
 							"        });\r",
-							"        // let bookingId = parseInt(responseData.bookingid);\r",
-							"        // pm.environment.set(\"bookingId\", bookingId);\r",
 							"    }else if(pm.response.code===400){\r",
 							"        pm.test(\"Status code is 400\", function () {\r",
 							"        pm.response.to.have.status(400);\r",
@@ -313,12 +307,22 @@
 				"header": [
 					{
 						"key": "Cookie",
-						"value": "token={{tokenAuth}}",
+						"value": "token={{token}}",
 						"type": "text"
 					},
 					{
 						"key": "Authorization",
 						"value": "Basic YWRtaW46cGFzc3dvcmQxMjM=",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
@@ -362,10 +366,6 @@
 		{
 			"key": "bookingId",
 			"value": "bookingId"
-		},
-		{
-			"key": "tokenAuth",
-			"value": "tokenHeader"
 		},
 		{
 			"key": "apiName",

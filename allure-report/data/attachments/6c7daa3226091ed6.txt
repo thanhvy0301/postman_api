@@ -1,0 +1,11 @@
+{
+    "firstname" : "abc",
+    "lastname" : "ddsa",
+    "totalprice" :9999,
+    "depositpaid" : true,
+    "bookingdates" : {
+    "checkin" : "11/22/2020",
+    "checkout" : "11/23/2020"
+    },
+    "additionalneeds" : "Breakfast"
+}

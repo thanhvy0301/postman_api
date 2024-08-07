@@ -285,7 +285,7 @@
 							"    if(pm.response.code===200){\r",
 							"        let responseData = pm.response.json();\r",
 							"        pm.test(\"Check value Lastname\", function(){\r",
-							"            pm.expect(responseData.lastname).to.be.a('number').and.to.not.be.null;\r",
+							"            pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
 							"        });\r",
 							"        pm.test(\"Check value Totalprice\", function(){\r",
 							"            pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",

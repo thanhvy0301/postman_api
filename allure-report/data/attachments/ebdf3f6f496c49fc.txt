@@ -1,1 +1,0 @@
-{"bookingid":2004,"booking":{"firstname":"abc","lastname":"ddsa","totalprice":9999,"depositpaid":true,"bookingdates":{"checkin":"2020-11-22","checkout":"2020-11-23"},"additionalneeds":"Breakfast"}}

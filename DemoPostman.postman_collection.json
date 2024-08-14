@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "77a31c3e-5fa8-45d6-85a2-dcc858cfc134",
 		"name": "DemoPostman",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "31294932"
 	},
 	"item": [
@@ -58,7 +58,18 @@
 						}
 					}
 				},
-				"url": "https://restful-booker.herokuapp.com/auth"
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/auth",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"auth"
+					]
+				}
 			},
 			"response": []
 		},
@@ -72,8 +83,7 @@
 							"\r",
 							"const apiName = pm.collectionVariables.get(\"apiName\");\r",
 							"pm.environment.set(\"createStatus\", pm.response.code);\r",
-							"if(apiName === \"CreateBooking\"){\r",
-							"    if(pm.response.code===200){\r",
+							"if(pm.response.code===200){\r",
 							"        let responseData = pm.response.json();\r",
 							"        pm.test(\"Check value Lastname\", function(){\r",
 							"        pm.expect(responseData.lastname).to.be.a('undefined').and.to.not.be.null;\r",
@@ -93,7 +103,6 @@
 							"        pm.response.to.have.status(400);\r",
 							"        });\r",
 							"    }\r",
-							"}\r",
 							"\r",
 							"\r",
 							"\r",
@@ -108,30 +117,12 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const apiName = pm.iterationData.get(\"ApiName\");\r",
-							"pm.collectionVariables.set(\"apiName\", apiName);\r",
-							"console.log(\"API Name:\", apiName);\r",
 							"console.log(\"CreateBooking ******\");\r",
-							"\r",
-							"// Lấy dữ liệu từ tệp CSV một lần và lưu vào biến\r",
-							"const iterationData = pm.iterationData.toObject();\r",
-							"\r",
-							"// Khởi tạo mảng để chứa các giá trị của từng cột\r",
-							"const columns = [];\r",
-							"// Duyệt qua từng cột và thêm vào mảng\r",
-							"for (const key in iterationData) {\r",
-							"    if (iterationData.hasOwnProperty(key)) {\r",
-							"        columns.push(iterationData[key]);\r",
-							"    }\r",
-							"}\r",
-							"// Kiểm tra giá trị của apiName và đặt các biến tương ứng\r",
-							"if (apiName === \"CreateBooking\") {\r",
-							"    pm.collectionVariables.set(\"firstName\", columns[1]);\r",
-							"    pm.collectionVariables.set(\"lastName\", columns[2]);\r",
-							"    pm.collectionVariables.set(\"totalPrice\", columns[3]);\r",
-							"    pm.collectionVariables.set(\"checkinDate\", columns[4]);\r",
-							"    pm.collectionVariables.set(\"checkoutDate\", columns[5]);\r",
-							"}\r",
+							"pm.collectionVariables.set(\"firstName\", pm.iterationData.get(\"firstName\"));\r",
+							"pm.collectionVariables.set(\"lastName\", pm.iterationData.get(\"lastName\"));\r",
+							"pm.collectionVariables.set(\"totalPrice\", pm.iterationData.get(\"totalPrice\"));\r",
+							"pm.collectionVariables.set(\"checkinDate\", pm.iterationData.get(\"checkinDate\"));\r",
+							"pm.collectionVariables.set(\"checkoutDate\", pm.iterationData.get(\"checkoutDate\"));\r",
 							""
 						],
 						"type": "text/javascript",
@@ -162,7 +153,18 @@
 						}
 					}
 				},
-				"url": "https://restful-booker.herokuapp.com/booking"
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking"
+					]
+				}
 			},
 			"response": []
 		},
@@ -178,7 +180,7 @@
 							"    try {\r",
 							"        let responseData = pm.response.json();\r",
 							"        pm.test(\"Validate the schema of the response body\", function () {\r",
-							"            pm.expect(responseData.firstname).to.be.a('string');\r",
+							"            pm.expect(responseData.firstname).to.be.a('number');\r",
 							"            pm.expect(responseData.lastname).to.be.a('string');\r",
 							"            pm.expect(responseData.totalprice).to.be.a('number');\r",
 							"            pm.expect(responseData.depositpaid).to.be.a('boolean');\r",
@@ -235,7 +237,19 @@
 						}
 					}
 				},
-				"url": "https://restful-booker.herokuapp.com/booking/{{bookingId}}"
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"{{bookingId}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -251,24 +265,9 @@
 							"console.log(\"API Name:\", apiName);\r",
 							"console.log(\"UpdateBooking ******\");\r",
 							"\r",
-							"// Lấy dữ liệu từ tệp CSV một lần và lưu vào biến\r",
-							"const iterationData = pm.iterationData.toObject();\r",
-							"// Khởi tạo mảng để chứa các giá trị của từng cột\r",
-							"const columns = [];\r",
-							"// Duyệt qua từng cột và thêm vào mảng\r",
-							"for (const key in iterationData) {\r",
-							"    if (iterationData.hasOwnProperty(key)) {\r",
-							"        columns.push(iterationData[key]);\r",
-							"    }\r",
-							"}\r",
-							"// Kiểm tra giá trị của apiName và đặt các biến tương ứng\r",
-							"if (apiName === \"UpdateBooking\") {\r",
-							"    pm.collectionVariables.set(\"firstName\", columns[1]);\r",
-							"    pm.collectionVariables.set(\"lastName\", columns[2]);\r",
-							"    pm.collectionVariables.set(\"totalPrice\", columns[3]);\r",
-							"    pm.collectionVariables.set(\"checkinDate\", columns[4]);\r",
-							"    pm.collectionVariables.set(\"checkoutDate\", columns[5]);\r",
-							"}\r",
+							"pm.collectionVariables.set(\"firstNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
+							"pm.collectionVariables.set(\"lastNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
+							"pm.collectionVariables.set(\"totalPriceUpdt\", pm.iterationData.get(\"totalPrice_Updt\"));\r",
 							""
 						],
 						"type": "text/javascript",
@@ -279,22 +278,19 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"console.log(pm.environment.get(\"bookingId\"));\r",
-							"const apiName = pm.collectionVariables.get(\"apiName\");\r",
-							"if(apiName === \"UpdateBooking\"){\r",
-							"    if(pm.response.code===200){\r",
-							"        let responseData = pm.response.json();\r",
-							"        pm.test(\"Check value Lastname\", function(){\r",
-							"            pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
-							"        });\r",
-							"        pm.test(\"Check value Totalprice\", function(){\r",
-							"            pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
-							"        });\r",
-							"    }else if(pm.response.code===400){\r",
-							"        pm.test(\"Status code is 400\", function () {\r",
-							"        pm.response.to.have.status(400);\r",
-							"        });\r",
-							"    }\r",
+							"\r",
+							"if(pm.response.code===200){\r",
+							"    let responseData = pm.response.json();\r",
+							"    pm.test(\"Check value Lastname\", function(){\r",
+							"        pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
+							"    });\r",
+							"    pm.test(\"Check value Totalprice\", function(){\r",
+							"        pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
+							"    });\r",
+							"}else if(pm.response.code===400){\r",
+							"    pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    });\r",
 							"}"
 						],
 						"type": "text/javascript",
@@ -328,14 +324,26 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstname\" : \"{{firstName}}\",\r\n    \"lastname\" : \"{{lastName}}\",\r\n    \"totalprice\" :{{totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"raw": "{\r\n    \"firstname\" : \"{{firstNameUpdt}}\",\r\n    \"lastname\" : \"{{lastNameUpdt}}\",\r\n    \"totalprice\" :{{totalPriceUpdt}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "https://restful-booker.herokuapp.com/booking/{{bookingId}}"
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"{{bookingId}}"
+					]
+				}
 			},
 			"response": []
 		}
@@ -397,6 +405,22 @@
 		},
 		{
 			"key": "stCodeCreate",
+			"value": ""
+		},
+		{
+			"key": "firstNameUpdt",
+			"value": ""
+		},
+		{
+			"key": "lastNameUpdt",
+			"value": ""
+		},
+		{
+			"key": "totalUpdt",
+			"value": ""
+		},
+		{
+			"key": "totalPriceUpdt",
 			"value": ""
 		}
 	]

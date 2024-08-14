@@ -1,9 +1,4 @@
-﻿ApiName,firstName,lastName,totalPrice,checkinDate,checkoutDate
-CreateBooking,vy,doan,123,11/22/2020,11/23/2020
-CreateBooking,vy,thanh,abc,11/22/2020,11/23/2020
-CreateBooking,doan,thanh,,11/22/2020,11/23/2020
-CreateBooking,,thanh,123,11/22/2020,11/23/2020
-UpdateBooking,abc,ddsa,9999,11/22/2020,11/23/2020
-UpdateBooking,dsa,ddsa,3333,11/22/2020,11/23/2020
-UpdateBooking,xcxz,ssa,123456,11/22/2020,11/23/2020
-UpdateBooking,xcxz,thanh,5555,11/22/2020,11/23/2020
+﻿firstName,lastName,totalPrice,checkinDate,checkoutDate,firstName_Updt,lastName_Updt,totalPrice_Updt
+vy,doan,123,11/22/2020,11/23/2020,tcb,tech,21
+vy,thanh,abc,11/22/2020,11/23/2020,mbb,mb,23
+doan,thanh,acb,11/22/2020,11/23/2020,tpb,tp,17

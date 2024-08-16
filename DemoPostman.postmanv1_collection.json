@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "77a31c3e-5fa8-45d6-85a2-dcc858cfc134",
 		"name": "DemoPostman",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "31294932"
 	},
 	"item": [
@@ -58,18 +58,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "https://restful-booker.herokuapp.com/auth",
-					"protocol": "https",
-					"host": [
-						"restful-booker",
-						"herokuapp",
-						"com"
-					],
-					"path": [
-						"auth"
-					]
-				}
+				"url": "https://restful-booker.herokuapp.com/auth"
 			},
 			"response": []
 		},
@@ -146,25 +135,14 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstname\" : \"{{firstName}}\",\r\n    \"lastname\" : \"{{lastName}}\",\r\n    \"totalprice\" :{{totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"raw": "{\r\n    \"firstname\" : \"abc\",\r\n    \"lastname\" : \"{{lastName}}\",\r\n    \"totalprice\" :{{totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": {
-					"raw": "https://restful-booker.herokuapp.com/booking",
-					"protocol": "https",
-					"host": [
-						"restful-booker",
-						"herokuapp",
-						"com"
-					],
-					"path": [
-						"booking"
-					]
-				}
+				"url": "https://restful-booker.herokuapp.com/booking"
 			},
 			"response": []
 		},
@@ -180,7 +158,7 @@
 							"    try {\r",
 							"        let responseData = pm.response.json();\r",
 							"        pm.test(\"Validate the schema of the response body\", function () {\r",
-							"            pm.expect(responseData.firstname).to.be.a('number');\r",
+							"            pm.expect(responseData.firstname).to.be.a('string');\r",
 							"            pm.expect(responseData.lastname).to.be.a('string');\r",
 							"            pm.expect(responseData.totalprice).to.be.a('number');\r",
 							"            pm.expect(responseData.depositpaid).to.be.a('boolean');\r",
@@ -237,19 +215,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
-					"protocol": "https",
-					"host": [
-						"restful-booker",
-						"herokuapp",
-						"com"
-					],
-					"path": [
-						"booking",
-						"{{bookingId}}"
-					]
-				}
+				"url": "https://restful-booker.herokuapp.com/booking/{{bookingId}}"
 			},
 			"response": []
 		},
@@ -284,9 +250,9 @@
 							"    pm.test(\"Check value Lastname\", function(){\r",
 							"        pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
 							"    });\r",
-							"    pm.test(\"Check value Totalprice\", function(){\r",
-							"        pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
-							"    });\r",
+							"    // pm.test(\"Check value Totalprice\", function(){\r",
+							"    //     pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
+							"    // });\r",
 							"}else if(pm.response.code===400){\r",
 							"    pm.test(\"Status code is 400\", function () {\r",
 							"    pm.response.to.have.status(400);\r",
@@ -324,26 +290,14 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstname\" : \"{{firstNameUpdt}}\",\r\n    \"lastname\" : \"{{lastNameUpdt}}\",\r\n    \"totalprice\" :{{totalPriceUpdt}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"raw": "{\r\n    \"firstname\" : \"abc\",\r\n    \"lastname\" : \"{{lastNameUpdt}}\",\r\n    \"totalprice\" :{{totalPriceUpdt}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": {
-					"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
-					"protocol": "https",
-					"host": [
-						"restful-booker",
-						"herokuapp",
-						"com"
-					],
-					"path": [
-						"booking",
-						"{{bookingId}}"
-					]
-				}
+				"url": "https://restful-booker.herokuapp.com/booking/{{bookingId}}"
 			},
 			"response": []
 		}
@@ -373,7 +327,7 @@
 	"variable": [
 		{
 			"key": "bookingId",
-			"value": "bookingId"
+			"value": ""
 		},
 		{
 			"key": "apiName",

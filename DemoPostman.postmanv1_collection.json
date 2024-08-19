@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "77a31c3e-5fa8-45d6-85a2-dcc858cfc134",
 		"name": "DemoPostman",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "31294932"
 	},
 	"item": [
@@ -58,7 +58,18 @@
 						}
 					}
 				},
-				"url": "https://restful-booker.herokuapp.com/auth"
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/auth",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"auth"
+					]
+				}
 			},
 			"response": []
 		},
@@ -142,7 +153,18 @@
 						}
 					}
 				},
-				"url": "https://restful-booker.herokuapp.com/booking"
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking"
+					]
+				}
 			},
 			"response": []
 		},
@@ -215,7 +237,19 @@
 						}
 					}
 				},
-				"url": "https://restful-booker.herokuapp.com/booking/{{bookingId}}"
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"{{bookingId}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -297,7 +331,19 @@
 						}
 					}
 				},
-				"url": "https://restful-booker.herokuapp.com/booking/{{bookingId}}"
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"{{bookingId}}"
+					]
+				}
 			},
 			"response": []
 		}

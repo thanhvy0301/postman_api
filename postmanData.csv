@@ -1,4 +1,11 @@
-﻿firstName,lastName,totalPrice,checkinDate,checkoutDate,firstName_Updt,lastName_Updt,totalPrice_Updt
-vy,doan,123,11/22/2020,11/23/2020,tcb,tech,21
-vy,doan,abc,11/22/2020,11/23/2020,tcb,tech,21
-vy,doan,abc,11/22/2020,11/23/2020,tcb,tech,21
+﻿firstName,lastName,totalPrice,depositPaid,checkinDate,checkoutDate,additionNeeds,firstName_Updt,lastName_Updt,totalPrice_Updt,expectedCode
+,,,true,,,,tcb,tech,21,200
+tcb,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200
+tcb,tech,21,true,12/11/2024,12/12/2024,,tcb,tech,21,200
+tcb,tech,,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
+tcb,%^(*(*(*(HJHJK,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
+123456,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
+123456,John'; SELECT * FROM users; --,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
+<script>alert('XSS');</script>,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
+tcb,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
+tcb,12/11/2024,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400

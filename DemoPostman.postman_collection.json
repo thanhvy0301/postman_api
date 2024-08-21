@@ -1,0 +1,954 @@
+{
+	"info": {
+		"_postman_id": "902a5318-3d6b-4068-8152-ff1ebedacd28",
+		"name": "DemoPostman",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31294932"
+	},
+	"item": [
+		{
+			"name": "Test Value's Keys (Null/NotNull)",
+			"item": [
+				{
+					"name": "Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"let statCode = pm.response.code;\r",
+									"if(statCode== 200){\r",
+									"    const responseData = pm.response.json();\r",
+									"    const tokenAuth = responseData.token;\r",
+									"    pm.collectionVariables.set(\"token\", tokenAuth);\r",
+									"    console.log(\"Token has been saved: \"+ tokenAuth);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"AUTH ******\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"admin\",\r\n    \"password\" : \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/auth",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"createStatus\", pm.response.code);\r",
+									"\r",
+									"// Kiểm tra mã trạng thái của phản hồi\r",
+									"if (pm.response.code === 500) {\r",
+									"    pm.test(\"Status code is 500\", function () {\r",
+									"        pm.response.to.have.status(500);\r",
+									"    });\r",
+									"    console.log(\"Internal Server Error\");\r",
+									"} else {\r",
+									"    // Đọc phản hồi dưới dạng JSON\r",
+									"    let jsonData;\r",
+									"    try {\r",
+									"        jsonData = pm.response.json();\r",
+									"    } catch (e) {\r",
+									"        console.log(\"Failed to parse response body as JSON.\");\r",
+									"        // Optional: Handle error or fail the test\r",
+									"        pm.test(\"Response body is not valid JSON\", function () {\r",
+									"            pm.expect.fail(\"Failed to parse response body as JSON.\");\r",
+									"        });\r",
+									"        return; // Exit if JSON parsing fails\r",
+									"    }\r",
+									"    \r",
+									"    // Lấy mã trạng thái hiện tại\r",
+									"    let actualCode = pm.response.code;\r",
+									"    console.log(\"Actual Code: \" + actualCode);\r",
+									"\r",
+									"    // Lấy mã trạng thái kỳ vọng từ biến collection\r",
+									"    let expectedCode = parseInt(pm.collectionVariables.get(\"expectedCode\"), 10);\r",
+									"    console.log(\"Expected Code: \" + expectedCode);\r",
+									"\r",
+									"    // Kiểm tra mã trạng thái phản hồi với mã trạng thái kỳ vọng\r",
+									"    pm.test(\"Status code\", function () {    \r",
+									"        pm.expect(actualCode).to.eql(expectedCode);\r",
+									"    });\r",
+									"\r",
+									"    // Lấy giá trị bookingId từ phản hồi và lưu vào biến collection\r",
+									"    let bookingId = jsonData.bookingid;\r",
+									"    pm.collectionVariables.set(\"bookingId\", bookingId);\r",
+									"    // if (bookingId) {\r",
+									"    //     pm.collectionVariables.set(\"bookingId\", bookingId);\r",
+									"    //     console.log(\"Set Booking ID: \" + bookingId);\r",
+									"    // } else {\r",
+									"    //     console.log(\"Booking ID is not present in the response.\");\r",
+									"    //     pm.collectionVariables.unset(\"bookingId\");\r",
+									"    // }\r",
+									"}\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"CreateBooking ---------------------------------------------\");\r",
+									"// Đọc body từ request\r",
+									"var requestBody = pm.request.body.raw;\r",
+									"// Kiểm tra xem body có dữ liệu hay không\r",
+									"clearBookingIdIfNotEmpty(); //Call hàm clear\r",
+									"if (requestBody) {\r",
+									"    savedValueCsvIntoVariable();\r",
+									"    console.log(\"All variables have been saved.\");\r",
+									"} else {\r",
+									"    // Thông báo lỗi nếu body không có dữ liệu\r",
+									"    console.log(\"Request body is empty.\");    \r",
+									"}\r",
+									"function savedValueCsvIntoVariable(){\r",
+									"    // Mảng chứa các cặp tên biến và tên cột trong CSV\r",
+									"    const variables = [\r",
+									"        { variableName: \"firstName\", csvColumn: \"firstName\" },\r",
+									"        { variableName: \"lastName\", csvColumn: \"lastName\" },\r",
+									"        { variableName: \"totalPrice\", csvColumn: \"totalPrice\" },\r",
+									"        { variableName: \"depositPaid\", csvColumn: \"depositPaid\" },\r",
+									"        { variableName: \"checkinDate\", csvColumn: \"checkinDate\" },\r",
+									"        { variableName: \"checkoutDate\", csvColumn: \"checkoutDate\" },\r",
+									"        { variableName: \"addNeed\", csvColumn: \"additionNeeds\" },\r",
+									"        { variableName: \"expectedCode\", csvColumn: \"expectedCode\" }\r",
+									"    ];\r",
+									"    // Vòng lặp để lưu biến từ iteration data\r",
+									"    variables.forEach(function(item) {\r",
+									"        pm.collectionVariables.set(item.variableName, pm.iterationData.get(item.csvColumn));\r",
+									"    });\r",
+									"}\r",
+									"//Hàm clear bookingid trước khi call\r",
+									"function clearBookingIdIfNotEmpty() {\r",
+									"    var bookingId = pm.collectionVariables.get(\"bookingId\");\r",
+									"    if (bookingId) {\r",
+									"        console.log(\"The variable 'bookingId' is not empty. Clearing its value.\");\r",
+									"        // Xóa giá trị của biến bookingId\r",
+									"        pm.collectionVariables.unset(\"bookingId\");\r",
+									"    } else {\r",
+									"        console.log(\"The variable 'bookingId' is already empty.\");\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"{{firstName}}\",\r\n    \"lastname\" : \"{{lastName}}\",\r\n    \"totalprice\" : {{totalPrice}},\r\n    \"depositpaid\" : {{depositPaid}},\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"{{addNeed}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Lấy mã trạng thái từ biến collection\r",
+									"let getStatusCode = pm.collectionVariables.get(\"stCodeCreate\");\r",
+									"\r",
+									"// Lấy ID từ biến collection\r",
+									"let getId = pm.collectionVariables.get(\"bookingId\");\r",
+									"\r",
+									"// Kiểm tra xem ID có tồn tại không\r",
+									"if (getId !== null) {\r",
+									"    // Nếu ID tồn tại, kiểm tra mã trạng thái và phân tích phản hồi\r",
+									"    if (pm.response.code === 404) {\r",
+									"        // Nếu mã trạng thái là 404, kiểm tra và ghi log\r",
+									"        pm.test(\"Status code is 404\", function () {\r",
+									"            pm.response.to.have.status(404);\r",
+									"        });\r",
+									"        console.log(\"Not Found\");\r",
+									"    } else {\r",
+									"        try {\r",
+									"            // Phân tích phản hồi dưới dạng JSON\r",
+									"            let responseData = pm.response.json();            \r",
+									"            // Kiểm tra cấu trúc của phản hồi\r",
+									"            pm.test(\"Validate the schema of the response body\", function () {\r",
+									"                pm.expect(responseData.firstname).to.be.a('string');\r",
+									"                pm.expect(responseData.lastname).to.be.a('string');\r",
+									"                pm.expect(responseData.totalprice).to.be.a('number');\r",
+									"                pm.expect(responseData.depositpaid).to.be.a('boolean');\r",
+									"                pm.expect(responseData.bookingdates).to.be.an('object');\r",
+									"                pm.expect(responseData.bookingdates.checkin).to.be.a('string');\r",
+									"                pm.expect(responseData.bookingdates.checkout).to.be.a('string');\r",
+									"                pm.expect(responseData.additionalneeds).to.be.a('string');\r",
+									"            });\r",
+									"        } catch (e) {\r",
+									"            // Xử lý lỗi nếu không thể phân tích phản hồi dưới dạng JSON\r",
+									"            console.log(\"Failed to parse response body as JSON: \" + e.message);\r",
+									"        }\r",
+									"    }\r",
+									"} else {\r",
+									"    // Xử lý khi không có ID\r",
+									"    console.log(\"Booking ID is null.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"Getooking ******\");\r",
+									"\r",
+									"let getId;\r",
+									"getId = pm.collectionVariables.get(\"bookingId\");\r",
+									"console.log(getId);\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking",
+								"{{bookingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateBooking",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"UpdateBooking ******\");\r",
+									"let getBookingid;\r",
+									"getBookingid = pm.collectionVariables.get(\"bookingId\");\r",
+									"if(getBookingid !== null){\r",
+									"    console.log(\"Booking Id: \"+getBookingid);\r",
+									"    pm.collectionVariables.set(\"firstNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
+									"    pm.collectionVariables.set(\"lastNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
+									"    pm.collectionVariables.set(\"totalPriceUpdt\", pm.iterationData.get(\"totalPrice_Updt\"));\r",
+									"}else{\r",
+									"    console.log(\"BookingId is null\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// let getId;\r",
+									"// getId = pm.collectionVariables.get(\"bookingId\");\r",
+									"\r",
+									"let responseText = pm.response.text(); // Lấy nội dung response dưới dạng text\r",
+									"\r",
+									"if (responseText) {\r",
+									"    try {\r",
+									"        let responseData = JSON.parse(responseText); // Cố gắng parse response thành JSON\r",
+									"\r",
+									"        pm.test(\"Check value Lastname\", function(){\r",
+									"            pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
+									"        });\r",
+									"\r",
+									"        pm.test(\"Check value Totalprice\", function(){\r",
+									"            pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
+									"        });\r",
+									"\r",
+									"    } catch (e) {\r",
+									"        console.log(\"Response: \", responseText);\r",
+									"        pm.test(\"Status code is 404\", function () {\r",
+									"            pm.response.to.have.status(404);\r",
+									"        });\r",
+									"    }\r",
+									"} else {\r",
+									"    console.log(\"Không có response trả về.\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46cGFzc3dvcmQxMjM=",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"abc\",\r\n    \"lastname\" : \"{{lastNameUpdt}}\",\r\n    \"totalprice\" :{{totalPriceUpdt}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking",
+								"{{bookingId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test Null keys",
+			"item": [
+				{
+					"name": "Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"let statCode = pm.response.code;\r",
+									"if(statCode== 200){\r",
+									"    const responseData = pm.response.json();\r",
+									"    const tokenAuth = responseData.token;\r",
+									"    pm.collectionVariables.set(\"token\", tokenAuth);\r",
+									"    console.log(\"Token has been saved: \"+ tokenAuth);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"AUTH ******\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"admin\",\r\n    \"password\" : \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/auth",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Lưu mã trạng thái phản hồi vào biến môi trường\r",
+									"pm.environment.set(\"createStatus\", pm.response.code);\r",
+									"if(pm.response.code===500){\r",
+									"    pm.test(\"Status code is 500\", function () {\r",
+									"        pm.response.to.have.status(500);\r",
+									"    });\r",
+									"    console.log(\"Internal Server Error\");\r",
+									"}else{\r",
+									"    let actualCode = pm.response.code;\r",
+									"    console.log(\"Actual Code: \" + actualCode);\r",
+									"    // Lấy mã trạng thái kỳ vọng từ biến collection\r",
+									"    let getExCode = pm.collectionVariables.get(\"expectedCode\");\r",
+									"    console.log(\"Expected Code: \" + getExCode);\r",
+									"    //let expectedCode = parseInt(getExCode);\r",
+									"    // Kiểm tra mã trạng thái phản hồi với mã trạng thái kỳ vọng\r",
+									"    pm.test(\"Status code\", function () {    \r",
+									"        pm.expect(actualCode).to.eql(getExCode);\r",
+									"    });\r",
+									"}\r",
+									"// Các thao tác kiểm tra sau khi gửi request\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"CreateBooking ---------------------------------------------\");\r",
+									"pm.request.body.update({\r",
+									"    mode: 'raw',\r",
+									"    raw: '{}'\r",
+									"});\r",
+									"// // Đọc body từ request\r",
+									"// var requestBody = pm.request.body.raw;\r",
+									"// // Kiểm tra xem body có dữ liệu hay không\r",
+									"// clearBookingIdIfNotEmpty(); //Call hàm clear\r",
+									"// if (requestBody) {\r",
+									"//     savedValueCsvIntoVariable();\r",
+									"//     console.log(\"All variables have been saved.\");\r",
+									"// } else {\r",
+									"//     // Thông báo lỗi nếu body không có dữ liệu\r",
+									"//     console.log(\"Request body is empty.\");    \r",
+									"// }\r",
+									"// function savedValueCsvIntoVariable(){\r",
+									"//     // Mảng chứa các cặp tên biến và tên cột trong CSV\r",
+									"//     const variables = [\r",
+									"//         { variableName: \"firstName\", csvColumn: \"firstName\" },\r",
+									"//         { variableName: \"lastName\", csvColumn: \"lastName\" },\r",
+									"//         { variableName: \"totalPrice\", csvColumn: \"totalPrice\" },\r",
+									"//         { variableName: \"depositPaid\", csvColumn: \"depositPaid\" },\r",
+									"//         { variableName: \"checkinDate\", csvColumn: \"checkinDate\" },\r",
+									"//         { variableName: \"checkoutDate\", csvColumn: \"checkoutDate\" },\r",
+									"//         { variableName: \"addNeed\", csvColumn: \"additionNeeds\" },\r",
+									"//         { variableName: \"expectedCode\", csvColumn: \"expectedCode\" }\r",
+									"//     ];\r",
+									"//     // Vòng lặp để lưu biến từ iteration data\r",
+									"//     variables.forEach(function(item) {\r",
+									"//         pm.collectionVariables.set(item.variableName, pm.iterationData.get(item.csvColumn));\r",
+									"//     });\r",
+									"// }\r",
+									"// //Hàm clear bookingid trước khi call\r",
+									"// function clearBookingIdIfNotEmpty() {\r",
+									"//     var bookingId = pm.collectionVariables.get(\"bookingId\");\r",
+									"//     if (bookingId) {\r",
+									"//         console.log(\"The variable 'bookingId' is not empty. Clearing its value.\");\r",
+									"//         // Xóa giá trị của biến bookingId\r",
+									"//         pm.collectionVariables.unset(\"bookingId\");\r",
+									"//     } else {\r",
+									"//         console.log(\"The variable 'bookingId' is already empty.\");\r",
+									"//     }\r",
+									"// }\r",
+									"\r",
+									"// Parse the JSON body\r",
+									"\r",
+									"\r",
+									"// // Function to recursively remove keys with undefined or null values\r",
+									"// function cleanObject(obj) {\r",
+									"//     for (let key in obj) {\r",
+									"//         if (obj[key] && typeof obj[key] === 'object') {\r",
+									"//             cleanObject(obj[key]);\r",
+									"//         } else if (obj[key] === undefined || obj[key] === null || obj[key] === \"\") {\r",
+									"//             delete obj[key];\r",
+									"//         }\r",
+									"//     }\r",
+									"// }\r",
+									"// // Clean the requestBody object\r",
+									"// cleanObject(requestBody);\r",
+									"\r",
+									"// // Set the cleaned body back to the request\r",
+									"// pm.request.body.raw = JSON.stringify(requestBody);\r",
+									"// console.log(\"Cleaned Request Body: \", pm.request.body.raw);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"{{firstName}}\",\r\n    \"lastname\" : \"{{lastName}}\",\r\n    \"totalprice\" :{{totalPrice}},\r\n    \"depositpaid\" : {{depositPaid}},\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"{{addNeed}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let getStatusCode = pm.collectionVariables.get(\"stCodeCreate\");\r",
+									"let getId;\r",
+									"getId = pm.collectionVariables.get(\"bookingId\");\r",
+									"if (getId!==null){\r",
+									"    let responseData = pm.response.json();\r",
+									"    try {\r",
+									"        pm.test(\"Validate the schema of the response body\", function () {\r",
+									"            pm.expect(responseData.firstname).to.be.a('string');\r",
+									"            pm.expect(responseData.lastname).to.be.a('string');\r",
+									"            pm.expect(responseData.totalprice).to.be.a('number');\r",
+									"            pm.expect(responseData.depositpaid).to.be.a('boolean');\r",
+									"            pm.expect(responseData.bookingdates).to.be.an('object');\r",
+									"            pm.expect(responseData.bookingdates.checkin).to.be.a('string');\r",
+									"            pm.expect(responseData.bookingdates.checkout).to.be.a('string');\r",
+									"            pm.expect(responseData.additionalneeds).to.be.a('string');\r",
+									"        });\r",
+									"    } catch (e) {\r",
+									"        console.log(\"Null data\");\r",
+									"    }\r",
+									"}else if(getId===null){\r",
+									"    pm.test(\"Status code is 404\", function () {\r",
+									"        pm.response.to.have.status(404);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"Getooking ******\");\r",
+									"let getId;\r",
+									"getId = pm.collectionVariables.get(\"bookingId\");\r",
+									"if (getId!==null){\r",
+									"    console.log(\"OK!\");\r",
+									"}else if(getId===null){\r",
+									"    console.log(\"NOT OK!\")\r",
+									"    pm.execution.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking",
+								"{{bookingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateBooking",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"UpdateBooking ******\");\r",
+									"let getBookingid;\r",
+									"getBookingid = pm.collectionVariables.get(\"bookingId\");\r",
+									"if(getBookingid !== null){\r",
+									"    console.log(\"Booking Id: \"+getBookingid);\r",
+									"    pm.collectionVariables.set(\"firstNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
+									"    pm.collectionVariables.set(\"lastNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
+									"    pm.collectionVariables.set(\"totalPriceUpdt\", pm.iterationData.get(\"totalPrice_Updt\"));\r",
+									"}else{\r",
+									"    console.log(\"BookingId is null\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// let getId;\r",
+									"// getId = pm.collectionVariables.get(\"bookingId\");\r",
+									"\r",
+									"let responseText = pm.response.text(); // Lấy nội dung response dưới dạng text\r",
+									"\r",
+									"if (responseText) {\r",
+									"    try {\r",
+									"        let responseData = JSON.parse(responseText); // Cố gắng parse response thành JSON\r",
+									"\r",
+									"        pm.test(\"Check value Lastname\", function(){\r",
+									"            pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
+									"        });\r",
+									"\r",
+									"        pm.test(\"Check value Totalprice\", function(){\r",
+									"            pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
+									"        });\r",
+									"\r",
+									"    } catch (e) {\r",
+									"        console.log(\"Response: \", responseText);\r",
+									"        pm.test(\"Status code is 404\", function () {\r",
+									"            pm.response.to.have.status(404);\r",
+									"        });\r",
+									"    }\r",
+									"} else {\r",
+									"    console.log(\"Không có response trả về.\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46cGFzc3dvcmQxMjM=",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"abc\",\r\n    \"lastname\" : \"{{lastNameUpdt}}\",\r\n    \"totalprice\" :{{totalPriceUpdt}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking",
+								"{{bookingId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiName",
+			"value": ""
+		},
+		{
+			"key": "firstName",
+			"value": ""
+		},
+		{
+			"key": "lastName",
+			"value": ""
+		},
+		{
+			"key": "totalPrice",
+			"value": ""
+		},
+		{
+			"key": "checkinDate",
+			"value": ""
+		},
+		{
+			"key": "checkoutDate",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "stCodeCreate",
+			"value": ""
+		},
+		{
+			"key": "firstNameUpdt",
+			"value": ""
+		},
+		{
+			"key": "lastNameUpdt",
+			"value": ""
+		},
+		{
+			"key": "totalUpdt",
+			"value": ""
+		},
+		{
+			"key": "totalPriceUpdt",
+			"value": ""
+		},
+		{
+			"key": "addNeed",
+			"value": ""
+		},
+		{
+			"key": "expectedCode",
+			"value": ""
+		},
+		{
+			"key": "bookingId",
+			"value": ""
+		},
+		{
+			"key": "depositPaid",
+			"value": ""
+		}
+	]
+}

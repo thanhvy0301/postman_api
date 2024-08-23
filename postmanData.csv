@@ -1,11 +1,13 @@
-﻿firstName,lastName,totalPrice,depositPaid,checkinDate,checkoutDate,additionNeeds,firstName_Updt,lastName_Updt,totalPrice_Updt,expectedCode
-,,,true,,,,tcb,tech,21,200
-tcb,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200
-tcb,tech,21,true,12/11/2024,12/12/2024,,tcb,tech,21,200
-tcb,tech,,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
-tcb,%^(*(*(*(HJHJK,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
-123456,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
-123456,John'; SELECT * FROM users; --,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
-<script>alert('XSS');</script>,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
-tcb,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
-tcb,12/11/2024,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400
+﻿TestCaseName,firstName,lastName,totalPrice,depositPaid,checkinDate,checkoutDate,additionNeeds,firstName_Updt,lastName_Updt,totalPrice_Updt,expectedCode,
+[Test Body Request] Null Key's Value,,,,TRUE,,,,tcb,tech,21,400,
+[Test Body Request] Null Key's Value,tcb,tech,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,tcb,tech,21,TRUE,12/11/2024,12/12/2024,,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,tcb,tech,,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,tcb,%^(*(*(*(HJHJK,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
+[Test Body Request] Null Key's Value,123456,tech,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,123456,John'; SELECT * FROM users; --,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
+[Test Body Request] Null Key's Value,<script>alert('XSS');</script>,tech,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
+[Test Body Request] Null Key's Value,tcb,tech,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,tcb,12/11/2024,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
+[Test Body Request] Nul Body Request,,,,,,,,,,,500,
+[Test Body Request] Null keys (Require),,,21,TRUE,12/12/2024,12/12/2024,12/13/2024,,,,500,//Nếu muốn rỗng key nào thì không nhập data vào

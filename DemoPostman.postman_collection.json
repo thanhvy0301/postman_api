@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "902a5318-3d6b-4068-8152-ff1ebedacd28",
+		"_postman_id": "c4d93c9c-1641-4237-a011-0dc02ea89a9d",
 		"name": "DemoPostman",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "31294932"
@@ -250,8 +250,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 500\", function () {\r",
-									"    pm.response.to.have.status(500);\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
 									"});\r",
 									"console.log(\"Status: \" + pm.response.status);\r",
 									"\r",
@@ -268,18 +268,16 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"console.log(\"[Test Body Request] Null keys ---------------------------------------------\");\r",
+									"console.log(\"[Test Body Request] Null keys (Require) ---------------------------------------------\");\r",
 									"var getTcName = pm.iterationData.get(\"TestCaseName\");\r",
 									"var requestBody = pm.request.body.raw;\r",
 									"\r",
 									"// Xóa giá trị của các biến nếu không rỗng\r",
-									"clearVariableIfNotEmpty(\"bookingId\");\r",
-									"clearVariableIfNotEmpty(\"testCaseName\"); \r",
-									"clearVariableIfNotEmpty(\"stCodeCreate\"); \r",
+									"clearAllVariables();\r",
 									"\r",
-									"// Kiểm tra nếu TestCaseName khác '[Test Body Request] Null keys (Require)'\r",
+									"// Kiểm tra nếu TestCaseName khác '[Test Body Request] Null keys (Not Require)'\r",
 									"if (getTcName !== \"[Test Body Request] Null keys (Require)\") {\r",
-									"    console.log(`TestCaseName: ${getTcName} does not match '[Test Body Request] Null Body Request'. Stopping execution.`);\r",
+									"    console.log(`TestCaseName: ${getTcName} does not match '[Test Body Request] Null keys (Require)'. Stopping execution`);\r",
 									"    pm.execution.skipRequest(); // Dừng việc thực hiện request tiếp theo\r",
 									"    return; // Kết thúc script tại đây để ngăn việc thực hiện thêm request\r",
 									"} else {\r",
@@ -320,40 +318,51 @@
 									"        // Chuyển đổi body JSON thành đối tượng\r",
 									"        let bodyObj = JSON.parse(resolvedRequestBody);\r",
 									"\r",
-									"        // Duyệt qua tất cả các key trong đối tượng\r",
-									"        for (let key in bodyObj) {\r",
-									"            // Kiểm tra nếu giá trị của key là undefined hoặc là một đối tượng rỗng\r",
-									"            if (bodyObj[key] === undefined || bodyObj[key] === \"undefined\" || bodyObj[key] === \"\") {\r",
-									"                delete bodyObj[key]; // Xóa key\r",
-									"                console.log(`Removed key with undefined value: ${key}`);\r",
-									"            } else if (typeof bodyObj[key] === 'object' && bodyObj[key] !== null) {\r",
-									"                // Nếu là một đối tượng, duyệt qua tất cả các subKey\r",
-									"                for (let subKey in bodyObj[key]) {\r",
-									"                    if (bodyObj[key][subKey] === undefined || bodyObj[key][subKey] === \"undefined\" || bodyObj[key][subKey] === \"\") {\r",
-									"                        delete bodyObj[key][subKey];\r",
-									"                        console.log(`Removed sub-key with undefined value: ${subKey}`);\r",
+									"        function checkAndRemoveKeys(obj) {\r",
+									"            for (let key in obj) {\r",
+									"                if (obj.hasOwnProperty(key)) {\r",
+									"                    const value = obj[key];\r",
+									"                    \r",
+									"                    // Xóa khóa nếu giá trị không hợp lệ\r",
+									"                    if (value === undefined || value === null || value === \"\" || (typeof value === 'object' && Object.keys(value).length === 0)) {\r",
+									"                        delete obj[key];\r",
+									"                        console.log(`Removed key with invalid value: ${key}`);\r",
+									"                    } else if (typeof value === 'object' && value !== null) {\r",
+									"                        // Nếu là một đối tượng, xử lý đệ quy\r",
+									"                        checkAndRemoveKeys(value);\r",
 									"                    }\r",
 									"                }\r",
 									"            }\r",
 									"        }\r",
+									"\r",
+									"        // Xử lý các khóa từ đối tượng body\r",
+									"        checkAndRemoveKeys(bodyObj);\r",
+									"\r",
 									"        // Chuyển đổi lại đối tượng thành chuỗi JSON và cập nhật body request\r",
 									"        pm.request.body.raw = JSON.stringify(bodyObj);\r",
-									"        console.log(\"Body after delete key: \" + pm.request.body.raw);\r",
+									"        console.log(\"Body after deleting keys: \" + pm.request.body.raw);\r",
 									"    } catch (error) {\r",
 									"        console.error(\"Error parsing JSON: \", error);\r",
 									"    }\r",
 									"}\r",
+									"\r",
 									"// Hàm clear biến trước khi call\r",
-									"function clearVariableIfNotEmpty(variableName) {\r",
-									"    var variableValue = pm.collectionVariables.get(variableName);\r",
-									"    if (variableValue) {\r",
-									"        console.log(\"Current value of \" + variableName + \": \" + variableValue );\r",
-									"        pm.collectionVariables.set(variableName, \"\");\r",
-									"        console.log(\"Cleared value of \" + variableName);\r",
-									"    } else {\r",
-									"        console.log(`The variable '${variableName}' is already empty.`);\r",
+									"function clearAllVariables() {\r",
+									"    // Lấy tất cả các biến trong pm.collectionVariables\r",
+									"    const allVariables = pm.collectionVariables.toObject();\r",
+									"\r",
+									"    // Duyệt qua tất cả các biến\r",
+									"    for (const variableName in allVariables) {\r",
+									"        if (allVariables.hasOwnProperty(variableName)) {            \r",
+									"            pm.collectionVariables.set(variableName, \"\"); // Xóa giá trị            \r",
+									"        }\r",
 									"    }\r",
+									"    console.log(\"Deleted all values !\");\r",
 									"}\r",
+									"\r",
+									"// Gọi hàm để xóa tất cả các giá trị của biến\r",
+									"\r",
+									"\r",
 									""
 								],
 								"type": "text/javascript",
@@ -398,14 +407,9 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "Test Value's Keys (Null/NotNull)",
-			"item": [
+				},
 				{
-					"name": "Auth",
+					"name": "[Test Body Request] Null keys (Not Require)",
 					"event": [
 						{
 							"listen": "test",
@@ -414,13 +418,12 @@
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"let statCode = pm.response.code;\r",
-									"if(statCode== 200){\r",
-									"    const responseData = pm.response.json();\r",
-									"    const tokenAuth = responseData.token;\r",
-									"    pm.collectionVariables.set(\"token\", tokenAuth);\r",
-									"    console.log(\"Token has been saved: \"+ tokenAuth);\r",
-									"}"
+									"console.log(\"Status: \" + pm.response.status);\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -430,289 +433,96 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"console.log(\"AUTH ******\");\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"admin\",\r\n    \"password\" : \"password123\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "https://restful-booker.herokuapp.com/auth",
-							"protocol": "https",
-							"host": [
-								"restful-booker",
-								"herokuapp",
-								"com"
-							],
-							"path": [
-								"auth"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GetBooking",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Lấy mã trạng thái từ biến collection\r",
-									"let getStatusCode = pm.collectionVariables.get(\"stCodeCreate\");\r",
+									"console.log(\"[Test Body Request] Null keys (Not Require) ---------------------------------------------\");\r",
+									"var getTcName = pm.iterationData.get(\"TestCaseName\");\r",
+									"var requestBody = pm.request.body.raw;\r",
 									"\r",
-									"// Lấy ID từ biến collection\r",
-									"let getId = pm.collectionVariables.get(\"bookingId\");\r",
+									"// Xóa giá trị của các biến nếu không rỗng\r",
+									"clearAllVariables();\r",
 									"\r",
-									"// Kiểm tra xem ID có tồn tại không\r",
-									"if (getId !== null) {\r",
-									"    // Nếu ID tồn tại, kiểm tra mã trạng thái và phân tích phản hồi\r",
-									"    if (pm.response.code === 404) {\r",
-									"        // Nếu mã trạng thái là 404, kiểm tra và ghi log\r",
-									"        pm.test(\"Status code is 404\", function () {\r",
-									"            pm.response.to.have.status(404);\r",
-									"        });\r",
-									"        console.log(\"Not Found\");\r",
-									"    } else {\r",
-									"        try {\r",
-									"            // Phân tích phản hồi dưới dạng JSON\r",
-									"            let responseData = pm.response.json();            \r",
-									"            // Kiểm tra cấu trúc của phản hồi\r",
-									"            pm.test(\"Validate the schema of the response body\", function () {\r",
-									"                pm.expect(responseData.firstname).to.be.a('string');\r",
-									"                pm.expect(responseData.lastname).to.be.a('string');\r",
-									"                pm.expect(responseData.totalprice).to.be.a('number');\r",
-									"                pm.expect(responseData.depositpaid).to.be.a('boolean');\r",
-									"                pm.expect(responseData.bookingdates).to.be.an('object');\r",
-									"                pm.expect(responseData.bookingdates.checkin).to.be.a('string');\r",
-									"                pm.expect(responseData.bookingdates.checkout).to.be.a('string');\r",
-									"                pm.expect(responseData.additionalneeds).to.be.a('string');\r",
-									"            });\r",
-									"        } catch (e) {\r",
-									"            // Xử lý lỗi nếu không thể phân tích phản hồi dưới dạng JSON\r",
-									"            console.log(\"Failed to parse response body as JSON: \" + e.message);\r",
+									"// Kiểm tra nếu TestCaseName khác '[Test Body Request] Null keys (Not Require)'\r",
+									"if (getTcName !== \"[Test Body Request] Null keys (Not Require)\") {\r",
+									"    console.log(`TestCaseName: ${getTcName} does not match '[Test Body Request] Null keys (Not Require)'. Stopping execution`);\r",
+									"    pm.execution.skipRequest(); // Dừng việc thực hiện request tiếp theo\r",
+									"    return; // Kết thúc script tại đây để ngăn việc thực hiện thêm request\r",
+									"} else {\r",
+									"    savedValueCsvIntoVariable();\r",
+									"    removeKeysWithUndefinedValues();\r",
+									"}\r",
+									"\r",
+									"function savedValueCsvIntoVariable() {\r",
+									"    // Mảng chứa các cặp tên biến và tên cột trong CSV    \r",
+									"    const variables = [\r",
+									"        { variableName: \"firstName\", csvColumn: \"firstName\" },\r",
+									"        { variableName: \"lastName\", csvColumn: \"lastName\" },\r",
+									"        { variableName: \"totalPrice\", csvColumn: \"totalPrice\" },\r",
+									"        { variableName: \"depositPaid\", csvColumn: \"depositPaid\" },\r",
+									"        { variableName: \"checkinDate\", csvColumn: \"checkinDate\" },\r",
+									"        { variableName: \"checkoutDate\", csvColumn: \"checkoutDate\" },\r",
+									"        { variableName: \"addNeed\", csvColumn: \"additionNeeds\" },\r",
+									"        { variableName: \"expectedCode\", csvColumn: \"expectedCode\" }\r",
+									"    ];\r",
+									"\r",
+									"    // Vòng lặp để lưu biến từ iteration data\r",
+									"    for (let i = 0; i < variables.length; i++) {\r",
+									"        const item = variables[i];\r",
+									"        const value = pm.iterationData.get(item.csvColumn);\r",
+									"        // Lưu biến nếu giá trị không phải là null, undefined, hoặc chuỗi rỗng\r",
+									"        if (value !== undefined && value !== null && value !== \"\") {\r",
+									"            pm.collectionVariables.set(item.variableName, value);\r",
 									"        }\r",
 									"    }\r",
-									"} else {\r",
-									"    // Xử lý khi không có ID\r",
-									"    console.log(\"Booking ID is null.\");\r",
 									"}\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"console.log(\"Getooking ******\");\r",
 									"\r",
-									"let getId;\r",
-									"getId = pm.collectionVariables.get(\"bookingId\");\r",
-									"console.log(getId);\r",
+									"// Hàm xóa một thuộc tính cụ thể khỏi body JSON nếu giá trị của nó là undefined\r",
+									"function removeKeysWithUndefinedValues() {\r",
+									"    // Thay thế các biến trong requestBody\r",
+									"    let resolvedRequestBody = pm.variables.replaceIn(requestBody);\r",
 									"\r",
-									"\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
-							"protocol": "https",
-							"host": [
-								"restful-booker",
-								"herokuapp",
-								"com"
-							],
-							"path": [
-								"booking",
-								"{{bookingId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "UpdateBooking",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"console.log(\"UpdateBooking ******\");\r",
-									"let getBookingid;\r",
-									"getBookingid = pm.collectionVariables.get(\"bookingId\");\r",
-									"if(getBookingid !== null){\r",
-									"    console.log(\"Booking Id: \"+getBookingid);\r",
-									"    pm.collectionVariables.set(\"firstNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
-									"    pm.collectionVariables.set(\"lastNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
-									"    pm.collectionVariables.set(\"totalPriceUpdt\", pm.iterationData.get(\"totalPrice_Updt\"));\r",
-									"}else{\r",
-									"    console.log(\"BookingId is null\");\r",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// let getId;\r",
-									"// getId = pm.collectionVariables.get(\"bookingId\");\r",
-									"\r",
-									"let responseText = pm.response.text(); // Lấy nội dung response dưới dạng text\r",
-									"\r",
-									"if (responseText) {\r",
 									"    try {\r",
-									"        let responseData = JSON.parse(responseText); // Cố gắng parse response thành JSON\r",
+									"        // Chuyển đổi body JSON thành đối tượng\r",
+									"        let bodyObj = JSON.parse(resolvedRequestBody);\r",
 									"\r",
-									"        pm.test(\"Check value Lastname\", function(){\r",
-									"            pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
-									"        });\r",
+									"        function checkAndRemoveKeys(obj) {\r",
+									"            for (let key in obj) {\r",
+									"                if (obj.hasOwnProperty(key)) {\r",
+									"                    const value = obj[key];\r",
+									"                    \r",
+									"                    // Xóa khóa nếu giá trị không hợp lệ\r",
+									"                    if (value === undefined || value === null || value === \"\" || (typeof value === 'object' && Object.keys(value).length === 0)) {\r",
+									"                        delete obj[key];\r",
+									"                        console.log(`Removed key with invalid value: ${key}`);\r",
+									"                    } else if (typeof value === 'object' && value !== null) {\r",
+									"                        // Nếu là một đối tượng, xử lý đệ quy\r",
+									"                        checkAndRemoveKeys(value);\r",
+									"                    }\r",
+									"                }\r",
+									"            }\r",
+									"        }\r",
 									"\r",
-									"        pm.test(\"Check value Totalprice\", function(){\r",
-									"            pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
-									"        });\r",
+									"        // Xử lý các khóa từ đối tượng body\r",
+									"        checkAndRemoveKeys(bodyObj);\r",
 									"\r",
-									"    } catch (e) {\r",
-									"        console.log(\"Response: \", responseText);\r",
-									"        pm.test(\"Status code is 404\", function () {\r",
-									"            pm.response.to.have.status(404);\r",
-									"        });\r",
+									"        // Chuyển đổi lại đối tượng thành chuỗi JSON và cập nhật body request\r",
+									"        pm.request.body.raw = JSON.stringify(bodyObj);\r",
+									"        console.log(\"Body after deleting keys: \" + pm.request.body.raw);\r",
+									"    } catch (error) {\r",
+									"        console.error(\"Error parsing JSON: \", error);\r",
 									"    }\r",
-									"} else {\r",
-									"    console.log(\"Không có response trả về.\");\r",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Cookie",
-								"value": "token={{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Authorization",
-								"value": "Basic YWRtaW46cGFzc3dvcmQxMjM=",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"firstname\" : \"abc\",\r\n    \"lastname\" : \"{{lastNameUpdt}}\",\r\n    \"totalprice\" :{{totalPriceUpdt}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
-							"protocol": "https",
-							"host": [
-								"restful-booker",
-								"herokuapp",
-								"com"
-							],
-							"path": [
-								"booking",
-								"{{bookingId}}"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Test Null body",
-			"item": [
-				{
-					"name": "Auth",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"let statCode = pm.response.code;\r",
-									"if(statCode== 200){\r",
-									"    const responseData = pm.response.json();\r",
-									"    const tokenAuth = responseData.token;\r",
-									"    pm.collectionVariables.set(\"token\", tokenAuth);\r",
-									"    console.log(\"Token has been saved: \"+ tokenAuth);\r",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"console.log(\"AUTH ******\");\r",
+									"}\r",
+									"\r",
+									"function clearAllVariables() {\r",
+									"    // Lấy tất cả các biến trong pm.collectionVariables\r",
+									"    const allVariables = pm.collectionVariables.toObject();\r",
+									"\r",
+									"    // Duyệt qua tất cả các biến\r",
+									"    for (const variableName in allVariables) {\r",
+									"        if (allVariables.hasOwnProperty(variableName)) {            \r",
+									"            pm.collectionVariables.set(variableName, \"\"); // Xóa giá trị            \r",
+									"        }\r",
+									"    }\r",
+									"    console.log(\"Deleted all values !\");\r",
+									"}\r",
 									""
 								],
 								"type": "text/javascript",
@@ -722,216 +532,21 @@
 					],
 					"request": {
 						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"admin\",\r\n    \"password\" : \"password123\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "https://restful-booker.herokuapp.com/auth",
-							"protocol": "https",
-							"host": [
-								"restful-booker",
-								"herokuapp",
-								"com"
-							],
-							"path": [
-								"auth"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GetBooking",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"let getStatusCode = pm.collectionVariables.get(\"stCodeCreate\");\r",
-									"let getId;\r",
-									"getId = pm.collectionVariables.get(\"bookingId\");\r",
-									"if (getId!==null){\r",
-									"    let responseData = pm.response.json();\r",
-									"    try {\r",
-									"        pm.test(\"Validate the schema of the response body\", function () {\r",
-									"            pm.expect(responseData.firstname).to.be.a('string');\r",
-									"            pm.expect(responseData.lastname).to.be.a('string');\r",
-									"            pm.expect(responseData.totalprice).to.be.a('number');\r",
-									"            pm.expect(responseData.depositpaid).to.be.a('boolean');\r",
-									"            pm.expect(responseData.bookingdates).to.be.an('object');\r",
-									"            pm.expect(responseData.bookingdates.checkin).to.be.a('string');\r",
-									"            pm.expect(responseData.bookingdates.checkout).to.be.a('string');\r",
-									"            pm.expect(responseData.additionalneeds).to.be.a('string');\r",
-									"        });\r",
-									"    } catch (e) {\r",
-									"        console.log(\"Null data\");\r",
-									"    }\r",
-									"}else if(getId===null){\r",
-									"    pm.test(\"Status code is 404\", function () {\r",
-									"        pm.response.to.have.status(404);\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"console.log(\"Getooking ******\");\r",
-									"let getId;\r",
-									"getId = pm.collectionVariables.get(\"bookingId\");\r",
-									"if (getId!==null){\r",
-									"    console.log(\"OK!\");\r",
-									"}else if(getId===null){\r",
-									"    console.log(\"NOT OK!\")\r",
-									"    pm.execution.setNextRequest(null);\r",
-									"}\r",
-									"\r",
-									"\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
 						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
-							"protocol": "https",
-							"host": [
-								"restful-booker",
-								"herokuapp",
-								"com"
-							],
-							"path": [
-								"booking",
-								"{{bookingId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "UpdateBooking",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"console.log(\"UpdateBooking ******\");\r",
-									"let getBookingid;\r",
-									"getBookingid = pm.collectionVariables.get(\"bookingId\");\r",
-									"if(getBookingid !== null){\r",
-									"    console.log(\"Booking Id: \"+getBookingid);\r",
-									"    pm.collectionVariables.set(\"firstNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
-									"    pm.collectionVariables.set(\"lastNameUpdt\", pm.iterationData.get(\"firstName_Updt\"));\r",
-									"    pm.collectionVariables.set(\"totalPriceUpdt\", pm.iterationData.get(\"totalPrice_Updt\"));\r",
-									"}else{\r",
-									"    console.log(\"BookingId is null\");\r",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// let getId;\r",
-									"// getId = pm.collectionVariables.get(\"bookingId\");\r",
-									"\r",
-									"let responseText = pm.response.text(); // Lấy nội dung response dưới dạng text\r",
-									"\r",
-									"if (responseText) {\r",
-									"    try {\r",
-									"        let responseData = JSON.parse(responseText); // Cố gắng parse response thành JSON\r",
-									"\r",
-									"        pm.test(\"Check value Lastname\", function(){\r",
-									"            pm.expect(responseData.lastname).to.be.a('string').and.to.not.be.null;\r",
-									"        });\r",
-									"\r",
-									"        pm.test(\"Check value Totalprice\", function(){\r",
-									"            pm.expect(responseData.totalprice).to.be.a('number').and.to.not.be.null;\r",
-									"        });\r",
-									"\r",
-									"    } catch (e) {\r",
-									"        console.log(\"Response: \", responseText);\r",
-									"        pm.test(\"Status code is 404\", function () {\r",
-									"            pm.response.to.have.status(404);\r",
-									"        });\r",
-									"    }\r",
-									"} else {\r",
-									"    console.log(\"Không có response trả về.\");\r",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Cookie",
-								"value": "token={{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Authorization",
-								"value": "Basic YWRtaW46cGFzc3dvcmQxMjM=",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
 							{
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"firstname\" : \"abc\",\r\n    \"lastname\" : \"{{lastNameUpdt}}\",\r\n    \"totalprice\" :{{totalPriceUpdt}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+							"raw": "{\r\n    \"firstname\" : \"{{firstName}}\",\r\n    \"lastname\" : \"{{lastName}}\",\r\n    \"totalprice\" : {{totalPrice}},\r\n    \"depositpaid\" : {{depositPaid}},\r\n    \"bookingdates\" : {\r\n    \"checkin\" : \"{{checkinDate}}\",\r\n    \"checkout\" : \"{{checkoutDate}}\"\r\n    },\r\n    \"additionalneeds\" : \"{{addNeed}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -939,7 +554,7 @@
 							}
 						},
 						"url": {
-							"raw": "https://restful-booker.herokuapp.com/booking/{{bookingId}}",
+							"raw": "https://restful-booker.herokuapp.com/booking",
 							"protocol": "https",
 							"host": [
 								"restful-booker",
@@ -947,8 +562,7 @@
 								"com"
 							],
 							"path": [
-								"booking",
-								"{{bookingId}}"
+								"booking"
 							]
 						}
 					},

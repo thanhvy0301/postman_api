@@ -1,14 +1,14 @@
 TestCaseName,firstName,lastName,totalPrice,depositPaid,checkinDate,checkoutDate,additionNeeds,firstName_Updt,lastName_Updt,totalPrice_Updt,expectedCode,
-[Test Body Request] Null Key's Value,,,,TRUE,,,,tcb,tech,21,400,
-[Test Body Request] Null Key's Value,tcb,tech,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
-[Test Body Request] Null Key's Value,tcb,tech,21,TRUE,12/11/2024,12/12/2024,,tcb,tech,21,200,
-[Test Body Request] Null Key's Value,tcb,tech,,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
-[Test Body Request] Null Key's Value,tcb,%^(*(*(*(HJHJK,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
-[Test Body Request] Null Key's Value,123456,tech,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
-[Test Body Request] Null Key's Value,123456,John'; SELECT * FROM users; --,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
-[Test Body Request] Null Key's Value,<script>alert('XSS');</script>,tech,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
-[Test Body Request] Null Key's Value,tcb,tech,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
-[Test Body Request] Null Key's Value,tcb,12/11/2024,21,TRUE,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
+[Test Body Request] Null Key's Value,,,,true,,,,tcb,tech,21,400,
+[Test Body Request] Null Key's Value,tcb,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,tcb,tech,21,true,12/11/2024,12/12/2024,,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,tcb,tech,,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,tcb,%^(*(*(*(HJHJK,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
+[Test Body Request] Null Key's Value,123456,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,123456,John'; SELECT * FROM users; --,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
+[Test Body Request] Null Key's Value,<script>alert('XSS');</script>,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
+[Test Body Request] Null Key's Value,tcb,tech,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,200,
+[Test Body Request] Null Key's Value,tcb,12/11/2024,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,
 [Test Body Request] Nul Body Request,,,,,,,,,,,500,
-[Test Body Request] Null keys (Require),TRUE,TRUE,null,TRUE,12/12/2024,12/12/2024,Breakfast,,,,500,N?u mu?n xóa key mà không ph?i là string thì nh?p null ?? xóa key
-[Test Body Request] Null keys (Not Require),tcb,tech,21,TRUE,12/12/2024,12/12/2024,,,,,500,//N?u mu?n r?ng key nào thì không nh?p data vào
+[Test Body Request] Null keys (Require),tcb,12/11/2024,21,true,12/11/2024,12/12/2024,Breakfast,tcb,tech,21,400,N?u mu?n xóa key mà không ph?i là string thì nh?p null ?? xóa key
+[Test Body Request] Null keys (Not Require),tcb,12/11/2024,21,true,12/11/2024,12/12/2024,Breakfast,,,,,//N?u mu?n r?ng key nào thì không nh?p data vào
